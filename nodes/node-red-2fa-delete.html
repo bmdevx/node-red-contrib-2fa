@@ -1,5 +1,5 @@
 <script type="text/javascript">
-    RED.nodes.registerType('node-red-2fa-create', {
+    RED.nodes.registerType('node-red-2fa-delete', {
         category: 'authentication',
         defaults: {
             name: { value: '' },
@@ -8,15 +8,15 @@
         inputs: 1,
         outputs: 1,
         label: function () {
-            return this.name || '2FA Create Secret'
+            return this.name || '2FA Delete Secret'
         },
         color: "#6BB0FF",
-        paletteLabel: "2FA Create",
+        paletteLabel: "2FA Delete",
         icon: "font-awesome/fa-plus"
     });
 </script>
 
-<script type="text/html" data-template-name="node-red-2fa-create">
+<script type="text/html" data-template-name="node-red-2fa-delete">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
@@ -28,19 +28,18 @@
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="node-red-2fa-create">
-    <p>Create User Secret for Two Factor Authentication</p>
+<script type="text/x-red" data-help-name="node-red-2fa-delete">
+    <p>Delete User Secret</p>
     <h3>Input</h3>
     <dl class="message-properties">
         <dt>payload <span class="property-type">string | object</span></dt>
-        <dd>A payload string or payload object containing an 'userID' property which is the user identification for which a secret will be generated.</dd>
+        <dd>A payload string or payload object containing an 'userID' property which is the user identification for which will be deleted.</dd>
     </dl>
     <h3>Output</h3>
     <dl class="message-properties">
         <dt>msg <span class="property-type">object</span></dt>
-        <dd>Returns a msg with a payload consisting of an object with a 'userID' and the generated 'secret' object which contains the secret in a 
-            'base32', 'ascii', and 'hex' format.</dd>
+        <dd>Returns a msg with a payload consisting of an object with a 'userID' and whether the user was 'deleted'.</dd>
     </dl>
     <h3>Details</h3>
-    <p>This node takes in a userID and generates a secret which is returned in a payload object.</p>
+    <p>This node takes in a userID and deletes a User's secret.</p>
 </script>

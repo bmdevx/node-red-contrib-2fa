@@ -64,6 +64,18 @@ module.exports = function (RED) {
                 saveConfig().catch(e => node.err(e));
             }
 
+            node.deleteUser = (userID) => {
+                const users = config2fa[KEY_USERS];
+                if (users[userID] !== undefined) {
+                    delete users[userID];
+                    config2fa[KEY_USERS] = users;
+
+                    return saveConfig();
+                } else {
+                    return new Promise((res, rej) => res({ deleted: false, userID: userID, error: 'User not found' }));
+                }
+            }
+
             node.hasUser = (userID) => {
                 const users = config2fa[KEY_USERS];
                 if (users[userID] !== undefined) {
@@ -81,7 +93,6 @@ module.exports = function (RED) {
 
                 return undefined;
             }
-
 
             node.getSecret = (userID, encoding = 'base32') => {
                 const users = config2fa[KEY_USERS];

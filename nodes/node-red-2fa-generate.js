@@ -15,7 +15,8 @@ module.exports = function (RED) {
             const userID = (typeof pay === 'string') ? pay : (typeof pay === 'object' ? pay.userID : undefined);
 
             if (userID === undefined || !config2fa.hasUser(userID)) {
-                node.warn("User not found");
+                node.warn('User not found');
+                send({ payload: { userID: userID, error: 'User not found' } });
             } else {
                 const secret = config2fa.getSecret(userID, 'base32');
 

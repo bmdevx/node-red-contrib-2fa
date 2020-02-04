@@ -12,9 +12,11 @@ module.exports = function (RED) {
             const pay = msg.payload;
 
             if (pay.userID === undefined || !config2fa.hasUser(pay.userID)) {
-                node.warn("User not found");
+                node.warn('User not found');
+                msg.error = 'User not found';
             } else if (pay.token === undefined || typeof pay.token !== 'string') {
-                node.warn("Token not found");
+                node.warn('Token not found');
+                msg.error = 'Token not found';
             } else {
                 const secret = config2fa.getSecret(pay.userID, 'base32');
 
@@ -23,9 +25,9 @@ module.exports = function (RED) {
                     encoding: 'base32',
                     token: (typeof pay.token === 'number' ? pay.token.toString() : pay.token)
                 });
-
-                send(msg);
             }
+
+            send(msg);
 
             done();
         });
