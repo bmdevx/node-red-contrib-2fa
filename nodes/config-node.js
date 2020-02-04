@@ -2,7 +2,7 @@ const fs = require('fs');
 const fsp = require('fs').promises;
 const path = require('path');
 
-const DEAFULT_FILE_PATH = '/data/config-node.json';
+const DEAFULT_FILE_PATH = '/data/config-2fa.json';
 
 const KEY_USERS = 'users';
 const KEY_SECRET_LENGTH = 'secretLength';
