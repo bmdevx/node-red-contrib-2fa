@@ -1,6 +1,6 @@
 module.exports = function (RED) {
 
-    function NodeRed2FADelete(config) {
+    function DeleteNode(config) {
         RED.nodes.createNode(this, config);
         const node = this;
 
@@ -31,5 +31,5 @@ module.exports = function (RED) {
         });
     }
 
-    RED.nodes.registerType("node-red-2fa-delete", NodeRed2FADelete);
+    RED.nodes.registerType("delete-node", DeleteNode);
 }

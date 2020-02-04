@@ -2,7 +2,7 @@ const fs = require('fs');
 const fsp = require('fs').promises;
 const path = require('path');
 
-const DEAFULT_FILE_PATH = '/data/node-red-2fa-config.json';
+const DEAFULT_FILE_PATH = '/data/config-node.json';
 
 const KEY_USERS = 'users';
 const KEY_SECRET_LENGTH = 'secretLength';
@@ -26,7 +26,7 @@ const createDirIfNotExist = (filePath) => {
 
 module.exports = function (RED) {
 
-    function NodeRed2FAConfig(config) {
+    function ConfigNode(config) {
         RED.nodes.createNode(this, config);
 
         var initiated = false;
@@ -151,5 +151,5 @@ module.exports = function (RED) {
         };
     }
 
-    RED.nodes.registerType("node-red-2fa-config", NodeRed2FAConfig);
+    RED.nodes.registerType("config-node", ConfigNode);
 }

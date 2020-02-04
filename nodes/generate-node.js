@@ -4,7 +4,7 @@ const DEFAULT_ENCODING = 'base32';
 
 module.exports = function (RED) {
 
-    function NodeRed2FAGenerate(config) {
+    function GenerateNode(config) {
         RED.nodes.createNode(this, config);
         const node = this;
 
@@ -40,5 +40,5 @@ module.exports = function (RED) {
         });
     }
 
-    RED.nodes.registerType("node-red-2fa-generate", NodeRed2FAGenerate);
+    RED.nodes.registerType("generate-node", GenerateNode);
 }

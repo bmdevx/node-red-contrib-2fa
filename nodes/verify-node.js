@@ -2,7 +2,7 @@ const speakeasy = require('speakeasy');
 
 module.exports = function (RED) {
 
-    function NodeRed2FAVerify(config) {
+    function VerifyNode(config) {
         RED.nodes.createNode(this, config);
         const node = this;
 
@@ -37,5 +37,5 @@ module.exports = function (RED) {
         });
     }
 
-    RED.nodes.registerType("node-red-2fa-verify", NodeRed2FAVerify);
+    RED.nodes.registerType("verify-node", VerifyNode);
 }

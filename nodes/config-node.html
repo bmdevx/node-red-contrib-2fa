@@ -1,8 +1,8 @@
 <script type="text/javascript">
-    RED.nodes.registerType('node-red-2fa-config', {
+    RED.nodes.registerType('config-node', {
         category: 'config',
         defaults: {
-            configPath: { value: '/data/node-red-2fa-config.json', required: true },
+            configPath: { value: '/data/config-node.json', required: true },
             secrectLength: { value: 32, required: true, validate: RED.validators.number() },
             secrectUseSymbols: { value: true, required: true }
         },
@@ -15,7 +15,7 @@
     });
 </script>
 
-<script type="text/html" data-template-name="node-red-2fa-config">
+<script type="text/html" data-template-name="config-node">
     <div class="form-row" style="display: -webkit-flex;">
         <label for="node-config-input-configPath" style="width: 12em"><i class="fa fa-file-text"></i> Config Path</label>
         <input type="text" id="node-config-input-configPath" style="-webkit-flex:1">
@@ -30,7 +30,7 @@
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="node-red-2fa-config">
+<script type="text/x-red" data-help-name="config-node">
     <p>Two Factor Authentication Configuration</p>
     <h3>Settings</h3>
     <dl class="message-properties">

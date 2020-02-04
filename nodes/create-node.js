@@ -2,7 +2,7 @@ const speakeasy = require('speakeasy');
 
 module.exports = function (RED) {
 
-    function NodeRed2FACreate(config) {
+    function CreateNode(config) {
         RED.nodes.createNode(this, config);
         const node = this;
 
@@ -53,5 +53,5 @@ module.exports = function (RED) {
         });
     }
 
-    RED.nodes.registerType("node-red-2fa-create", NodeRed2FACreate);
+    RED.nodes.registerType("create-node", CreateNode);
 }

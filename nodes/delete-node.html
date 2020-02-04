@@ -1,22 +1,22 @@
 <script type="text/javascript">
-    RED.nodes.registerType('node-red-2fa-verify', {
+    RED.nodes.registerType('delete-node', {
         category: 'authentication',
         defaults: {
             name: { value: '' },
-            config: { type: 'node-red-2fa-config', required: true }
+            config: { type: 'config-node', required: true }
         },
         inputs: 1,
         outputs: 1,
         label: function () {
-            return this.name || '2FA Verify Token'
+            return this.name || '2FA Delete Secret'
         },
         color: "#6BB0FF",
-        paletteLabel: "2FA Verify",
-        icon: "font-awesome/fa-check"
+        paletteLabel: "2FA Delete",
+        icon: "font-awesome/fa-trash"
     });
 </script>
 
-<script type="text/html" data-template-name="node-red-2fa-verify">
+<script type="text/html" data-template-name="delete-node">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
@@ -28,18 +28,18 @@
     </div>
 </script>
 
-<script type="text/x-red" data-help-name="node-red-2fa-verify">
-    <p>Verify Token for Two Factor Authentication</p>
+<script type="text/x-red" data-help-name="delete-node">
+    <p>Delete User Secret</p>
     <h3>Input</h3>
     <dl class="message-properties">
-        <dt>payload <span class="property-type">object</span></dt>
-        <dd>A payload object containing an 'userID' & 'token' property.</dd>
+        <dt>payload <span class="property-type">string | object</span></dt>
+        <dd>A payload string or payload object containing an 'userID' property which is the user identification for which will be deleted.</dd>
     </dl>
     <h3>Output</h3>
     <dl class="message-properties">
         <dt>msg <span class="property-type">object</span></dt>
-        <dd>Returns the input message with a 'verfied' property in the payload.</dd>
+        <dd>Returns a msg with a payload consisting of an object with a 'userID' and whether the user was 'deleted'.</dd>
     </dl>
     <h3>Details</h3>
-    <p>This node verifies user information and a 6 digit token and returns the same message with a verfied property.</p>
+    <p>This node takes in a userID and deletes a User's secret.</p>
 </script>
