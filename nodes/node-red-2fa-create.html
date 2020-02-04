@@ -1,0 +1,46 @@
+<script type="text/javascript">
+    RED.nodes.registerType('node-red-2fa-create', {
+        category: 'Authentication',
+        defaults: {
+            name: { value: '' },
+            config: { type: 'node-red-2fa-config', required: true }
+        },
+        inputs: 1,
+        outputs: 1,
+        label: function () {
+            return this.name || '2FA Create User'
+        },
+        color: "#6BB0FF",
+        paletteLabel: "2FA Create",
+        icon: "font-awesome/fa-plus"
+    });
+</script>
+
+<script type="text/html" data-template-name="node-red-2fa-create">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-config"><i class="fa fa-cog"></i> Config</label>
+        <input type="text" id="node-input-config">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="node-red-2fa-create">
+    <p>Create User for Two Factor Authentication</p>
+    <h3>Input</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">string | object</span></dt>
+        <dd>A payload string or payload object containing an 'userID' property which is the user identification for which a secret will be generated.</dd>
+    </dl>
+    <h3>Output</h3>
+    <dl class="message-properties">
+        <dt>msg <span class="property-type">object</span></dt>
+        <dd>Returns a msg with a payload consisting of an object with a 'userID' and the generated 'secret' object which contains the secret in a 
+            'base32', 'ascii', and 'hex' format.</dd>
+    </dl>
+    <h3>Details</h3>
+    <p>This node takes in a userID and generates a secret which is returned in a payload object.</p>
+</script>

@@ -1,0 +1,45 @@
+<script type="text/javascript">
+    RED.nodes.registerType('node-red-2fa-verify', {
+        category: 'Authentication',
+        defaults: {
+            name: { value: '' },
+            config: { type: 'node-red-2fa-config', required: true }
+        },
+        inputs: 1,
+        outputs: 1,
+        label: function () {
+            return this.name || '2FA Verify Token'
+        },
+        color: "#6BB0FF",
+        paletteLabel: "2FA Verify",
+        icon: "font-awesome/fa-check"
+    });
+</script>
+
+<script type="text/html" data-template-name="node-red-2fa-verify">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-config"><i class="fa fa-cog"></i> Config</label>
+        <input type="text" id="node-input-config">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="node-red-2fa-verify">
+    <p>Verify Token for Two Factor Authentication</p>
+    <h3>Input</h3>
+    <dl class="message-properties">
+        <dt>payload <span class="property-type">object</span></dt>
+        <dd>A payload object containing an 'userID' & 'token' property.</dd>
+    </dl>
+    <h3>Output</h3>
+    <dl class="message-properties">
+        <dt>msg <span class="property-type">object</span></dt>
+        <dd>Returns the input message with a 'verfied' property in the payload.</dd>
+    </dl>
+    <h3>Details</h3>
+    <p>This node verifies user information and a 6 digit token and returns the same message with a verfied property.</p>
+</script>

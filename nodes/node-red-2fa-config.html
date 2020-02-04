@@ -1,0 +1,48 @@
+<script type="text/javascript">
+    RED.nodes.registerType('node-red-2fa-config', {
+        category: 'config',
+        defaults: {
+            configPath: { value: '/data/node-red-2fa-config.json', required: true },
+            secrectLength: { value: 32, required: true, validate: RED.validators.number() },
+            secrectUseSymbols: { value: true, required: true }
+        },
+        label: function () {
+            return this.name || '2FA Config'
+        },
+        color: "#4C8ED9",
+        paletteLabel: "2FA Config",
+        icon: "font-awesome/fa-list"
+    });
+</script>
+
+<script type="text/html" data-template-name="node-red-2fa-config">
+    <div class="form-row" style="display: -webkit-flex;">
+        <label for="node-config-input-configPath" style="width: 12em"><i class="fa fa-file-text"></i> Config Path</label>
+        <input type="text" id="node-config-input-configPath" style="-webkit-flex:1">
+    </div>
+    <div class="form-row" style="display: -webkit-flex;">
+        <label for="node-config-input-secrectLength" style="width: 12em"><i class="fa fa-tag"></i> Secrect Length</label>
+        <input type="number" id="node-config-input-secrectLength" style="-webkit-flex:1">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-secrectUseSymbols" style="width: 12em"><i class="fa fa-tag"></i> Secrect Use Symbols</label>
+        <input type="checkbox" id="node-config-input-secrectUseSymbols" style="width:auto !important; padding-left: 15em; vertical-align: middle;">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="node-red-2fa-config">
+    <p>Two Factor Authentication Configuration</p>
+    <h3>Settings</h3>
+    <dl class="message-properties">
+        <dt>Config Path <span class="property-type">string</span></dt>
+        <dd>Location where the settings and user secrets will be kept.</dd>
+
+        <dt>Secret Length <span class="property-type">number</span></dt>
+        <dd>Length of the created secret.</dd>
+
+        <dt>Secret Use Symbols <span class="property-type">bool</span></dt>
+        <dd>Determines if the generated secret will contain non alpha-numeric symbols.</dd>
+    </dl>
+    <h3>Details</h3>
+    <p>This node takes in a userID and generates a 6 digit token which is returned in a payload object.</p>
+</script>
