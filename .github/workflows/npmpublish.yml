@@ -1,26 +1,21 @@
-name: Build and Publish node-red-2fa
-
-on: [push]
-
+name: npm-publish
+on:
+  push:
+    branches:
+      - master
 jobs:
-  build:
-
+  npm-publish:
+    name: npm-publish
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [12.x]
-
     steps:
-    - uses: actions/checkout@v1
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
+    - name: Checkout repository
+      uses: actions/checkout@master
+    - name: Set up Node.js
+      uses: actions/setup-node@master
       with:
-        node-version: ${{ matrix.node-version }}
-    - name: npm publish
-      run: |
-        npm config set //registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN
-        npm run trypublish
+        node-version: 10.0.0
+    - name: Publish if version has been updated
+      uses: pascalgn/npm-publish-action@master
       env:
-        CI: true
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
