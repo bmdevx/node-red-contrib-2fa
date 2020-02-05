@@ -1,4 +1,6 @@
 const speakeasy = require('speakeasy');
+const qrcode = require('qrcode');
+const Stream = require('stream');
 
 module.exports = function (RED) {
 
@@ -37,15 +39,39 @@ module.exports = function (RED) {
                     }
                 }
 
-                const secret = speakeasy.generateSecret(secretLength, useSymbols);
-                user.secret = secret;
+                var secret = speakeasy.generateSecret({
+                    length: secretLength,
+                    symbols: useSymbols
+                });
 
-                config2fa.setUser(user);
+                //update otpauth_url to have Issuer and Label (userID)
+                secret.otpauth_url = speakeasy.otpauthURL({
+                    secret: secret.ascii,
+                    label: userID,
+                    issuer: 'NodeRED 2FA'
+                })
 
-                send({ payload: user });
+                const setAndSend = (s) => {
+                    user.secret = s;
+                    config2fa.setUser(user);
+                    send({ payload: user });
+                    done();
+                }
+
+                if (config.generateQRCode === true) {
+                    qrcode.toDataURL(secret.otpauth_url, (err, url) => {
+                        if (err) {
+                            node.warn(err);
+                            secret.error = 'Failed to generate QRCode URL';
+                        } else {
+                            secret.qrcode = url;
+                        }
+                        setAndSend(secret);
+                    });
+                } else {
+                    setAndSend(secret);
+                }
             }
-
-            done();
         });
 
         node.on('close', (done) => {

@@ -49,9 +49,9 @@ describe('2fa Nodes', function () {
     it('create-generate-verify', function (done) {
         var flow = [
             { id: "ncfg", type: "config-node", name: "config-node" },
-            { id: "ncreate", type: "create-node", name: "create-node", wires: [["nCreateRes"]] },
-            { id: "ngen", type: "generate-node", name: "generate-node", wires: [["nGenRes"]] },
-            { id: "nver", type: "verify-node", name: "verify-node", wires: [["nVerRes"]] },
+            { id: "ncreate", type: "create-node", name: "create-node", wires: [["nCreateRes"]], config: "ncfg", generateQRCode: true },
+            { id: "ngen", type: "generate-node", name: "generate-node", wires: [["nGenRes"]], config: "ncfg" },
+            { id: "nver", type: "verify-node", name: "verify-node", wires: [["nVerRes"]], config: "ncfg" },
             { id: "nCreateRes", type: "helper" },
             { id: "nGenRes", type: "helper" },
             { id: "nVerRes", type: "helper" }

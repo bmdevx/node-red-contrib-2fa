@@ -1,16 +1,12 @@
 {
   "name": "node-red-contrib-2fa",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Two-Factor Authentication (2FA) on NodeRED",
   "scripts": {
     "test": "mocha \"test/**/*_spec.js\""
   },
   "author": "bmdevx",
   "license": "GNU GPL3",
-  "dependencies": {
-    "qrcode": "^1.4.4",
-    "speakeasy": "^2.0.0"
-  },
   "keywords": [
     "node-red",
     "2FA",
@@ -27,6 +23,10 @@
       "verify-node": "nodes/verify-node.js",
       "generate-node": "nodes/generate-node.js"
     }
+  },
+  "dependencies": {
+    "qrcode": "^1.4.4",
+    "speakeasy": "^2.0.0"
   },
   "devDependencies": {
     "node-red": "^1.0.3",

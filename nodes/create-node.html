@@ -3,7 +3,8 @@
         category: 'authentication',
         defaults: {
             name: { value: '' },
-            config: { type: 'config-node', required: true }
+            config: { type: 'config-node', required: true },
+            generateQRCode: { value: false, required: false }
         },
         inputs: 1,
         outputs: 1,
@@ -17,14 +18,18 @@
 </script>
 
 <script type="text/html" data-template-name="create-node">
-    <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
-        <input type="text" id="node-input-name" placeholder="Name">
+    <div class="form-row" style="display: -webkit-flex;">
+        <label for="node-input-name" style="width: 10em"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name" style="-webkit-flex:1">
     </div>
 
+    <div class="form-row" style="display: -webkit-flex;">
+        <label for="node-input-config" style="width: 10em"><i class="fa fa-cog"></i> Config</label>
+        <input type="text" id="node-input-config" style="-webkit-flex:1">
+    </div>
     <div class="form-row">
-        <label for="node-input-config"><i class="fa fa-cog"></i> Config</label>
-        <input type="text" id="node-input-config">
+        <label for="node-input-generateQRCode" style="width: 10em"><i class="fa fa-tag"></i> Generate QR Code</label>
+        <input type="checkbox" id="node-input-generateQRCode" style="width:auto !important; padding-left: 15em; vertical-align: middle;">
     </div>
 </script>
 
@@ -39,7 +44,7 @@
     <dl class="message-properties">
         <dt>msg <span class="property-type">object</span></dt>
         <dd>Returns a msg with a payload consisting of an object with a 'userID' and the generated 'secret' object which contains the secret in a 
-            'base32', 'ascii', and 'hex' format.</dd>
+            'base32', 'ascii' and 'hex' format. Optional 'qrcode' is generated in the base64 image format.</dd>
     </dl>
     <h3>Details</h3>
     <p>This node takes in a userID and generates a secret which is returned in a payload object.</p>
