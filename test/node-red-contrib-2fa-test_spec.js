@@ -48,17 +48,21 @@ describe('2fa Nodes', function () {
 
     it('create-generate-verify', function (done) {
         var flow = [
-            { id: "ncfg", type: "config-node", name: "config-node" },
-            { id: "ncreate", type: "create-node", name: "create-node", wires: [["nCreateRes"]], config: "ncfg", generateQRCode: true },
-            { id: "ngen", type: "generate-node", name: "generate-node", wires: [["nGenRes"]], config: "ncfg" },
-            { id: "nver", type: "verify-node", name: "verify-node", wires: [["nVerRes"]], config: "ncfg" },
+            { id: "ncfg", type: "config-node", name: "config-node", encryptUsersConfig: true },
             { id: "nCreateRes", type: "helper" },
             { id: "nGenRes", type: "helper" },
-            { id: "nVerRes", type: "helper" }
+            { id: "nVerRes", type: "helper" },
+            { id: "ncreate", type: "create-node", name: "create-node", wires: [["nCreateRes"]], config: "ncfg", generateQRCode: true },
+            { id: "ngen", type: "generate-node", name: "generate-node", wires: [["nGenRes"]], config: "ncfg" },
+            { id: "nver", type: "verify-node", name: "verify-node", wires: [["nVerRes"]], config: "ncfg" }
         ];
 
 
-        helper.load([nr2fa_config, nr2fa_create, nr2fa_generate, nr2fa_verify], flow, function () {
+        helper.load([nr2fa_config, nr2fa_create, nr2fa_generate, nr2fa_verify], flow, {
+            ncfg: {
+                encryptionKey: "test"
+            }
+        }, function () {
             var ncreate = helper.getNode("ncreate");
             var ngen = helper.getNode("ngen");
             var nver = helper.getNode("nver");
@@ -69,7 +73,7 @@ describe('2fa Nodes', function () {
             const userID = "defUser";
 
             nCreateRes.on("input", function (msg, send, done) {
-                msg.payload.should.have.property('base32');
+                msg.payload.secret.should.have.property('base32');
 
                 ngen.receive({
                     payload: {
@@ -95,10 +99,13 @@ describe('2fa Nodes', function () {
                 done();
             });
 
+            const fdone = done;
+
             nVerRes.on("input", function (msg, send, done) {
                 msg.payload.should.have.property('verified', true);
 
                 done();
+                fdone();
             });
 
             setTimeout(() => {
@@ -107,8 +114,6 @@ describe('2fa Nodes', function () {
                         userID: userID
                     }
                 });
-
-                done();
             }, 2000);
         });
     }).timeout(60000);

@@ -11,6 +11,12 @@ module.exports = function (RED) {
         const config2fa = RED.nodes.getNode(config.config);
 
         node.on('input', function (msg, send, done) {
+            if (!config2fa.isInitialized()) {
+                node.warn('2FA config-node is not initialized');
+                done();
+                return;
+            }
+
             const pay = msg.payload;
             const userID = (typeof pay === 'string') ? pay : (typeof pay === 'object' ? pay.userID : undefined);
 

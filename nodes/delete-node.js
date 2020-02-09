@@ -7,21 +7,28 @@ module.exports = function (RED) {
         const config2fa = RED.nodes.getNode(config.config);
 
         node.on('input', function (msg, send, done) {
+            if (!config2fa.isInitialized()) {
+                node.warn('2FA config-node is not initialized');
+                done();
+                return;
+            }
+
             const pay = msg.payload;
             const userID = (typeof pay === 'string') ? pay : (typeof pay === 'object' ? pay.userID : undefined);
 
             if (userID === undefined) {
                 node.warn("Undefined UserID");
             } else {
-
                 config2fa.deleteUser(userID)
                     .then(res => {
                         send({ payload: res === undefined ? { deleted: true, userID: userID } : res });
-                        done();
                     })
                     .catch(e => {
                         node.err(e);
                         send({ payload: { deleted: false, userID: userID, error: e } })
+                    })
+                    .finally(_ => {
+                        done();
                     });
             }
         });

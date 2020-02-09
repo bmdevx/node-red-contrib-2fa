@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-2fa",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Two-Factor Authentication (2FA) on NodeRED",
   "scripts": {
     "test": "mocha \"test/**/*_spec.js\""

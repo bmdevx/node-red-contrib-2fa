@@ -1,12 +1,11 @@
 const fs = require('fs');
 const fsp = require('fs').promises;
 const path = require('path');
+const crypto = require('crypto');
 
 const DEAFULT_FILE_PATH = '/data/config-2fa.json';
 
 const KEY_USERS = 'users';
-const KEY_SECRET_LENGTH = 'secretLength';
-const KEY_SECRET_SYMBOLS = 'secretUseSymbols';
 
 const SECRET_LENGTH = 32;
 const SECRET_USE_SYMBOLS = true;
@@ -34,50 +33,116 @@ module.exports = function (RED) {
         const node = this;
         const configFilePath = (config.configPath && typeof config.configPath == 'string') ? config.configPath : DEAFULT_FILE_PATH;
 
-        var config2fa = { users: {}, secretLength: config.secretLength, secretUseSymbols: config.secretUseSymbols };
+        var usersCfg = { users: {} };
 
-        const saveConfig = () => {
+        const saveConfig = (filePath, cfg) => {
             return new Promise((resolve, reject) => {
                 try {
-                    const json = JSON.stringify(config2fa);
+                    var data = JSON.stringify(cfg);
 
-                    createDirIfNotExist(configFilePath);
+                    try {
+                        createDirIfNotExist(filePath);
 
-                    fsp.writeFile(configFilePath, json)
-                        .then(_ => {
-                            resolve();
-                        })
-                        .catch(e => {
-                            reject(`2FA config file failed to save- ${e}`);
-                        })
+                        if (config.encryptUsersConfig && node.credentials.encryptionKey) {
+                            var encryptionKey = crypto.createHash('sha256').update(node.credentials.encryptionKey).digest();
+                            var initVector = crypto.randomBytes(16);
+                            var cipher = crypto.createCipheriv("aes-256-ctr", encryptionKey, initVector);
+                            var enryptedData = cipher.update(data, 'utf8', 'base64') + cipher.final('base64');
+                            data = '!' + initVector.toString('hex') + enryptedData;
+                        }
+
+                        fsp.writeFile(filePath, data)
+                            .then(_ => {
+                                resolve();
+                            })
+                            .catch(e => {
+                                reject(`2FA config file failed to save- ${e}`);
+                            })
+                    } catch (e) {
+                        reject(`2FA config file failed to encrypt- ${e}`);
+                    }
                 } catch (e) {
                     reject(`2FA config file failed to convert to json- ${e}`);
                 }
             });
         }
 
+        const loadConfig = (filePath) => {
+            return new Promise((resolve, reject) => {
+                fsp.readFile(filePath)
+                    .then(data => {
+                        try {
+                            if (data.length > 0) {
+                                if (Buffer.isBuffer(data)) {
+                                    data = data.toString();
+                                }
+
+                                if (data[0] === '!') {
+                                    if (node.credentials.encryptionKey === undefined) {
+                                        reject('No decryption key found');
+                                    } else {
+                                        var encryptionKey = crypto.createHash('sha256').update(node.credentials.encryptionKey).digest();
+                                        var initVector = new Buffer(data.substring(1, 33), 'hex');
+                                        data = data.substring(33);
+                                        var decipher = crypto.createDecipheriv("aes-256-ctr", encryptionKey, initVector);
+                                        var decryptedData = decipher.update(data, 'base64', 'utf8') + decipher.final('utf8');
+
+                                        if (decryptedData[0] !== '{') {
+                                            reject('Invalid encryption key');
+                                        } else {
+                                            resolve(JSON.parse(decryptedData));
+                                        }
+                                    }
+                                } else {
+                                    resolve(JSON.parse(data));
+                                }
+                            } else {
+                                reject('Invalid config file');
+                            }
+                        } catch (e) {
+                            reject(`Failed to parse 2FA config file. (${e})`);
+                        }
+                    })
+                    .catch(e => {
+                        reject(`2FA config file does not exist. (${filePath})`);
+                    });
+            });
+        }
+
         const init = () => {
             node.setUser = (user) => {
-                const users = config2fa[KEY_USERS];
-                users[user.userID] = user;
-                config2fa[KEY_USERS] = users;
-                saveConfig().catch(e => node.err(e));
+                return new Promise((resolve, reject) => {
+                    const users = usersCfg[KEY_USERS];
+                    users[user.userID] = user;
+                    usersCfg[KEY_USERS] = users;
+                    saveConfig(configFilePath, usersCfg)
+                        .then(_ => resolve())
+                        .catch(e => {
+                            reject(e);
+                        });
+                });
             }
 
             node.deleteUser = (userID) => {
-                const users = config2fa[KEY_USERS];
-                if (users[userID] !== undefined) {
-                    delete users[userID];
-                    config2fa[KEY_USERS] = users;
+                return new Promise((resolve, reject) => {
+                    const users = usersCfg[KEY_USERS];
+                    if (users[userID] !== undefined) {
+                        delete users[userID];
+                        usersCfg[KEY_USERS] = users;
 
-                    return saveConfig();
-                } else {
-                    return new Promise((res, rej) => res({ deleted: false, userID: userID, error: 'User not found' }));
-                }
+                        saveConfig(configFilePath, usersCfg)
+                            .then(_ => resolve({ deleted: true, userID: userID }))
+                            .catch(e => {
+                                reject(e);
+                            });
+                    } else {
+                        resolve({ deleted: false, userID: userID, error: 'User not found' });
+                    }
+                });
             }
 
             node.hasUser = (userID) => {
-                const users = config2fa[KEY_USERS];
+                const users = usersCfg[KEY_USERS];
                 if (users[userID] !== undefined) {
                     return true;
                 }
@@ -86,7 +151,7 @@ module.exports = function (RED) {
             }
 
             node.getUser = (userID) => {
-                const users = config2fa[KEY_USERS];
+                const users = usersCfg[KEY_USERS];
                 if (users[userID] !== undefined) {
                     return users[userID];
                 }
@@ -95,7 +160,7 @@ module.exports = function (RED) {
             }
 
             node.getSecret = (userID, encoding = 'base32') => {
-                const users = config2fa[KEY_USERS];
+                const users = usersCfg[KEY_USERS];
                 if (users[userID] !== undefined) {
                     const user = users[userID];
 
@@ -112,11 +177,11 @@ module.exports = function (RED) {
             }
 
             node.getSecretLength = function () {
-                return config2fa[KEY_SECRET_LENGTH] !== undefined ? config2fa[KEY_SECRET_LENGTH] : SECRET_LENGTH;
+                return config.secretLength !== undefined ? config.secretLength : SECRET_LENGTH;
             }
 
             node.getSecretUseSymbols = function () {
-                return config2fa[KEY_SECRET_SYMBOLS] !== undefined ? config2fa[KEY_SECRET_SYMBOLS] : SECRET_USE_SYMBOLS;
+                return config.secretUseSymbols !== undefined ? config.secretUseSymbols : SECRET_USE_SYMBOLS;
             }
 
             initiated = true;
@@ -124,32 +189,32 @@ module.exports = function (RED) {
 
         checkExists(configFilePath).then(exists => {
             if (exists) {
-                fsp.readFile(configFilePath)
-                    .then(data => {
-                        try {
-                            config2fa = JSON.parse(data);
-                            init();
-                        } catch (e) {
-                            node.warn(`Failed to parse 2FA config file. (${e})`);
-                        }
+                loadConfig(configFilePath)
+                    .then(cfg => {
+                        usersCfg = cfg;
+                        init();
                     })
                     .catch(e => {
-                        node.warn(`2FA config file does not exist. (${configFilePath})`);
+                        node.error(e);
                     });
             } else {
-                saveConfig()
+                saveConfig(configFilePath, usersCfg)
                     .then(_ => init())
                     .catch(e => {
-                        console.error(e);
-                        node.warn(e);
+                        node.error(e);
                     });
             }
         });
 
-        node.isInitiated = () => {
+        node.isInitialized = () => {
             return initiated;
         };
     }
 
-    RED.nodes.registerType("config-node", ConfigNode);
+    RED.nodes.registerType("config-node", ConfigNode, {
+        credentials: {
+            encryptionKey: { type: "password" },
+            decrypt: {}
+        }
+    });
 }

@@ -9,14 +9,22 @@ module.exports = function (RED) {
         const config2fa = RED.nodes.getNode(config.config);
 
         node.on('input', function (msg, send, done) {
+            if (!config2fa.isInitialized()) {
+                node.warn('2FA config-node is not initialized');
+                done();
+                return;
+            }
+
             const pay = msg.payload;
 
             if (pay.userID === undefined || !config2fa.hasUser(pay.userID)) {
                 node.warn('User not found');
                 msg.error = 'User not found';
+                pay.verified = false;
             } else if (pay.token === undefined || typeof pay.token !== 'string') {
                 node.warn('Token not found');
                 msg.error = 'Token not found';
+                pay.verified = false;
             } else {
                 const secret = config2fa.getSecret(pay.userID, 'base32');
 
@@ -27,7 +35,9 @@ module.exports = function (RED) {
                 });
             }
 
-            send(msg);
+            if (pay.verified || config.onlyOutputOnAuth !== true) {
+                send(msg);
+            }
 
             done();
         });

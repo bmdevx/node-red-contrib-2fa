@@ -3,7 +3,8 @@
         category: 'authentication',
         defaults: {
             name: { value: '' },
-            config: { type: 'config-node', required: true }
+            config: { type: 'config-node', required: true },
+            onlyOutputOnAuth: { value: false }
         },
         inputs: 1,
         outputs: 1,
@@ -25,6 +26,10 @@
     <div class="form-row">
         <label for="node-input-config"><i class="fa fa-cog"></i> Config</label>
         <input type="text" id="node-input-config">
+    </div>
+    <div class="form-row">
+        <input type="checkbox" id="node-input-onlyOutputOnAuth" style="display: inline-block; width: auto; vertical-align: top;">
+        <label for="node-input-onlyOutputOnAuth" style="width: 70%;"> Only Output on Authenticated</label>
     </div>
 </script>
 
