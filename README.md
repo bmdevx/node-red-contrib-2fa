@@ -10,8 +10,8 @@
 * Node that generates a token
 * Node to verify generated token or token created via authenticator app
 * Node to delete user secrets
+* Encrypt User Secrets File (Package includes tool to decrypt)
 
 ### Future Development
 
-* Encryption of user secrets file
 * Database integration
