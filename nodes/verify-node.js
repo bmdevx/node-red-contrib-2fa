@@ -6,7 +6,7 @@ module.exports = function (RED) {
         RED.nodes.createNode(this, config);
         const node = this;
 
-        const config2fa = RED.nodes.getNode(config.config);
+        var config2fa = (typeof config.config === 'string') ? RED.nodes.getNode(config.config) : config.config;
 
         node.on('input', function (msg, send, done) {
             if (!config2fa.isInitialized()) {

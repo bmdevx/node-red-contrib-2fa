@@ -31,7 +31,7 @@ module.exports = function (RED) {
         var initiated = false;
 
         const node = this;
-        const configFilePath = (config.configPath && typeof config.configPath == 'string') ? config.configPath : DEAFULT_FILE_PATH;
+        const configFilePath = (config.configPath && typeof config.configPath === 'string') ? config.configPath : DEAFULT_FILE_PATH;
 
         var usersCfg = { users: {} };
 
